@@ -1,10 +1,17 @@
-// Type definitions for openfin-fdc3 0.2
+// Type definitions for openfin-fdc3-global 0.2
 // Project: https://github.com/HadoukenIO/fdc3-service#readme
 // Definitions by: bryangaleOF <https://github.com/bryangaleOF>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 // Minimum TypeScript Version: 3.0
 
+/*
+* Overview
+* When running within the OpenFin Runtime, and the `fdc3Api` flag in your manifest is set, your web applications will
+* have access to the "fdc3" namespace without the need to include additional source files. You can treat the "fdc3"
+* namespace as you would the "window", "navigator" or "document" objects. This is an alternative to using the
+* "openfin-fdc3" NPM package.
+*/
 declare namespace fdc3 {
     type AppChannel = import('./internal/main').AppChannel;
     type AppDirIntent = import('./internal/main').AppDirIntent;
