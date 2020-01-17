@@ -3,7 +3,7 @@
  *
  * This enum exists only as a helper, applications may define their own set of constants if they prefer.
  */
-export declare enum Intents {
+export enum Intents {
     DIAL_CALL = "DialCall",
     SAVE_CONTACT = "SaveContact",
     SAVE_INSTRUMENT = "SaveInstrument",

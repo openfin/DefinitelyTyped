@@ -4,7 +4,6 @@
  * These structures are defined by the App-Directory FDC3 working group. The definitions here are based on the 1.0.0
  * specification which can be found [here](https://fdc3.finos.org/appd-spec).
  */
-
 /**
  * Type alias to indicate when an Application Identifier should be passed. Application Identifiers
  * are described [here](https://fdc3.finos.org/docs/1.0/appd-discovery#application-identifier).
@@ -15,14 +14,14 @@
  *
  * This type alias exists to disambiguate the raw string app identity from the [[AppName]].
  */
-export declare type AppId = string;
+export type AppId = string;
 /**
  * App Name is the machine-readable name of the app, but it may well be sufficiently
  * human-readable that it can be used in user interfaces. If it's not, please use the title.
  *
  * This type alias exists to disambiguate the raw string app name from the [[AppId]].
  */
-export declare type AppName = string;
+export type AppName = string;
 /**
  * An application in the app directory.
  */

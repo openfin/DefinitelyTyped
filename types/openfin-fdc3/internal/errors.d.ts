@@ -1,7 +1,7 @@
 /**
  * Errors related to launching or interacting with a particular application.
  */
-export declare enum ApplicationError {
+export enum ApplicationError {
     /**
      * Indicates that an application of the provided name could not be found, either running or in the application directory.
      */
@@ -18,7 +18,7 @@ export declare enum ApplicationError {
 /**
  * Error codes relating to the context channel system.
  */
-export declare enum ChannelError {
+export enum ChannelError {
     /**
      * Indicates that a channel of a provided ID does not exist.
      */
@@ -27,7 +27,7 @@ export declare enum ChannelError {
 /**
  * Error codes relating to connections to the FDC3 service, from OpenFin windows or otherwise.
  */
-export declare enum ConnectionError {
+export enum ConnectionError {
     /**
      * Indicates that no window with a provided OpenFin Identity is registered with the FDC3 service.
      */
@@ -36,7 +36,7 @@ export declare enum ConnectionError {
 /**
  * Errors related to resolving an application to handle an intent and context.
  */
-export declare enum ResolveError {
+export enum ResolveError {
     /**
      * Indicates that no application could be found to handle the provided intent and context.
      */
@@ -53,7 +53,7 @@ export declare enum ResolveError {
 /**
  * Errors related to sending a context, possibly as part of an intent, to another application registered with the FDC3 service
  */
-export declare enum SendContextError {
+export enum SendContextError {
     /**
      * Indicates that the target application has no windows that have a relevant handler for the given context.
      */
@@ -74,7 +74,7 @@ export declare enum SendContextError {
  * Note that not all errors raised by the service will be of type `FDC3Error`. Standard JavaScript error types such as
  * `TypeError` and `Error` can also be thrown by the API.
  */
-export declare class FDC3Error extends Error {
+export class FDC3Error extends Error {
     /**
      * A string from one of [[ApplicationError]], [[ChannelError]], [[ConnectionError]], [[ResolveError]] or [[SendContextError]].
      *
