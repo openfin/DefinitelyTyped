@@ -8810,6 +8810,25 @@ declare namespace Office {
             Beta = "beta"
         }
         /**
+         * Specifies the source of the selected data in an item (see `Office.mailbox.item.getSelectedDataAsync` for details).
+         * 
+         * [Api set: Mailbox 1.2]
+         *
+         * @remarks
+         * 
+         * **{@link https://docs.microsoft.com/outlook/add-ins/#extension-points | Applicable Outlook mode}**: Compose
+         */
+        enum SourceProperty {
+            /**
+             * The source of the data is from the body of the item.
+             */
+            Body = "body",
+            /**
+             * The source of the data is from the subject of the item.
+             */
+            Subject = "subject"
+        }
+        /**
          * Specifies the week of the month.
          * 
          * [Api set: Mailbox 1.7]
@@ -8843,16 +8862,6 @@ declare namespace Office {
     }
     interface CoercionTypeOptions {
         coercionType?: Office.CoercionType | string;
-    }
-    enum SourceProperty {
-        /**
-         * The source of the data is from the body of the message.
-         */
-        Body,
-        /**
-         * The source of the data is from the subject of the message.
-         */
-        Subject
     }
     /**
      * The subclass of {@link Office.Item | Item} dealing with appointments.
@@ -12356,14 +12365,15 @@ declare namespace Office {
          */
         ewsUrl: string;
         /**
-         * The mailbox item. Depending on the context in which the add-in opened, the item may be of any number of types.
-         * If you want to see IntelliSense for only a specific type, cast this item to one of the following:
+         * The mailbox item. Depending on the context in which the add-in opened, the item type may vary.
+         * If you want to see IntelliSense for only a specific type or mode, cast this item to one of the following:
          *
          * {@link Office.ItemCompose | ItemCompose}, {@link Office.ItemRead | ItemRead},
+         * {@link Office.Message | Message}, {@link Office.Appointment | Appointment},
          * {@link Office.MessageCompose | MessageCompose}, {@link Office.MessageRead | MessageRead},
          * {@link Office.AppointmentCompose | AppointmentCompose}, {@link Office.AppointmentRead | AppointmentRead}
          */
-        item: Item & ItemCompose & ItemRead & MessageRead & MessageCompose & AppointmentRead & AppointmentCompose;
+        item: Item & ItemCompose & ItemRead & Message & MessageCompose & MessageRead & Appointment & AppointmentCompose & AppointmentRead;
         /**
          * Gets an object that provides methods to manage the categories master list associated with a mailbox.
          *
@@ -15454,7 +15464,7 @@ declare namespace Office {
          * 
          * [Api set: Mailbox 1.7] 
          */ 
-        changedRecipientsFields: RecipientsChangedFields; 
+        changedRecipientFields: RecipientsChangedFields; 
         /** 
          * Gets the type of the event. See `Office.EventType` for details. 
          * 
@@ -15463,29 +15473,47 @@ declare namespace Office {
         type: "olkRecipientsChanged"; 
     } 
     /**
-     * Represents `RecipientsChangedEventArgs.changedRecipientsFields` object. 
-     * 
-     * [Api set: Mailbox 1.7] 
-     */ 
-    interface RecipientsChangedFields { 
-        /** 
-         * Gets if optional attendees were changed. 
-         * 
-         * [Api set: Mailbox 1.7] 
-         */ 
-        optionalAttendees: boolean; 
-        /** 
-         * Gets if required attendees were changed. 
-         * 
-         * [Api set: Mailbox 1.7] 
-         */ 
-        requiredAttendees: boolean; 
-        /** 
-         * Gets if resources were changed. 
-         * 
-         * [Api set: Mailbox 1.7] 
-         */ 
-        resources: boolean; 
+     * Represents `RecipientsChangedEventArgs.changedRecipientFields` object.
+     *
+     * [Api set: Mailbox 1.7]
+     */
+    interface RecipientsChangedFields {
+        /**
+         * Gets if recipients in the **bcc** field were changed.
+         *
+         * [Api set: Mailbox 1.7]
+         */
+        bcc: boolean
+        /**
+         * Gets if recipients in the **cc** field were changed.
+         *
+         * [Api set: Mailbox 1.7]
+         */
+        cc: boolean;
+        /**
+         * Gets if optional attendees were changed.
+         *
+         * [Api set: Mailbox 1.7]
+         */
+        optionalAttendees: boolean;
+        /**
+         * Gets if required attendees were changed.
+         *
+         * [Api set: Mailbox 1.7]
+         */
+        requiredAttendees: boolean;
+        /**
+         * Gets if resources were changed.
+         *
+         * [Api set: Mailbox 1.7]
+         */
+        resources: boolean;
+        /**
+         * Gets if recipients in the **to** field were changed.
+         *
+         * [Api set: Mailbox 1.7]
+         */
+        to: boolean;
     }
     /**
      * The recurrence object provides methods to get and set the recurrence pattern of appointments but only get the recurrence pattern of 
@@ -16393,7 +16421,7 @@ declare namespace Office {
          */
         displayName: string;
         /**
-         * Gets the user's display name.
+         * Gets the user's SMTP email address.
          *
          * @remarks
          * 
@@ -16403,7 +16431,7 @@ declare namespace Office {
          */
         emailAddress: string;
         /**
-         * Gets the user's SMTP email address.
+         * Gets the user's time zone in Windows format.
          *
          * @remarks
          * 
@@ -17650,7 +17678,7 @@ declare namespace Excel {
     interface WorkbookAutoSaveSettingChangedEventArgs {
         /**
          *
-         * Represents the type of the event. See Excel.EventType for details.
+         * Gets the type of the event. See Excel.EventType for details.
          *
          * [Api set: ExcelApi 1.9]
          */
@@ -17715,7 +17743,7 @@ declare namespace Excel {
         changeType: Excel.DataChangeType | "Unknown" | "RangeEdited" | "RowInserted" | "RowDeleted" | "ColumnInserted" | "ColumnDeleted" | "CellInserted" | "CellDeleted";
         /**
          *
-         * Represents the information about the change detail. This property can be retrieved when the Changed event is triggered on a single cell. If the Changed event is triggered on multiple cells, this property cannot be retrieved.
+         * Gets the information about the change detail. This property can be retrieved when the Changed event is triggered on a single cell. If the Changed event is triggered on multiple cells, this property cannot be retrieved.
          *
          * [Api set: ExcelApi 1.9]
          */
@@ -18478,35 +18506,35 @@ declare namespace Excel {
     interface TableDeletedEventArgs {
         /**
          *
-         * Specifies the source of the event. See Excel.EventSource for details.
+         * Gets the source of the event. See Excel.EventSource for details.
          *
          * [Api set: ExcelApi 1.9]
          */
         source: Excel.EventSource | "Local" | "Remote";
         /**
          *
-         * Specifies the id of the table that is deleted.
+         * Gets the id of the table that is deleted.
          *
          * [Api set: ExcelApi 1.9]
          */
         tableId: string;
         /**
          *
-         * Specifies the name of the table that is deleted.
+         * Gets the name of the table that is deleted.
          *
          * [Api set: ExcelApi 1.9]
          */
         tableName: string;
         /**
          *
-         * Specifies the type of the event. See Excel.EventType for details.
+         * Gets the type of the event. See Excel.EventType for details.
          *
          * [Api set: ExcelApi 1.9]
          */
         type: "TableDeleted";
         /**
          *
-         * Specifies the id of the worksheet in which the table is deleted.
+         * Gets the id of the worksheet in which the table is deleted.
          *
          * [Api set: ExcelApi 1.9]
          */
@@ -20405,7 +20433,6 @@ declare namespace Excel {
         /**
          *
          * Represents the formula in A1-style notation.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
          *
          * [Api set: ExcelApi 1.1]
          */
@@ -20413,7 +20440,6 @@ declare namespace Excel {
         /**
          *
          * Represents the formula in A1-style notation, in the user's language and number-formatting locale.  For example, the English "=SUM(A1, 1.5)" formula would become "=SUMME(A1; 1,5)" in German.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
          *
          * [Api set: ExcelApi 1.1]
          */
@@ -20421,7 +20447,6 @@ declare namespace Excel {
         /**
          *
          * Represents the formula in R1C1-style notation.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
          *
          * [Api set: ExcelApi 1.2]
          */
@@ -20488,7 +20513,6 @@ declare namespace Excel {
         /**
          *
          * Represents Excel's number format code for the given range.
-            When setting number format to a range, the value argument can be either a single value (string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
          *
          * [Api set: ExcelApi 1.1]
          */
@@ -20496,8 +20520,6 @@ declare namespace Excel {
         /**
          *
          * Represents Excel's number format code for the given range, based on the language settings of the user.​
-            When setting number format local to a range, the value argument can be either a single value (string) or a two-dimensional array.
-            If the argument is a single value, it will be applied to all cells in the range.​
             Excel does not perform any language or format coercion when getting or setting the `numberFormatLocal` property.
             Any returned text uses the locally-formatted strings based on the language specified in the system settings.
          *
@@ -20568,7 +20590,6 @@ declare namespace Excel {
         /**
          *
          * Represents the raw values of the specified range. The data returned could be of type string, number, or a boolean. Cells that contain an error will return the error string.
-            When setting values to a range, the value argument can be either a single value (string, number or boolean) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
          *
          * [Api set: ExcelApi 1.1]
          */
@@ -24350,7 +24371,7 @@ declare namespace Excel {
         set(properties: Excel.RangeFormat): void;
         /**
          *
-         * Adjusts the indentation of the range formatting. The indent value ranges from 0 to 250 and is measured in characters..
+         * Adjusts the indentation of the range formatting. The indent value ranges from 0 to 250 and is measured in characters.
          *
          * [Api set: ExcelApiOnline 1.1]
          *
@@ -26563,7 +26584,7 @@ declare namespace Excel {
         showDisplayUnitLabel: boolean;
         /**
          *
-         * Represents the text orientation of the axis tick label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+         * Represents the angle to which the text is oriented for the chart axis tick label. The value should either be an integer from -90 to 90 or the integer 180 for vertically-oriented text.
          *
          * [Api set: ExcelApi 1.8]
          */
@@ -27010,7 +27031,7 @@ declare namespace Excel {
         showValue: boolean;
         /**
          *
-         * Represents the text orientation of data labels. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+         * Represents the angle to which the text is oriented for the data labels. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
          *
          * [Api set: ExcelApi 1.8]
          */
@@ -27195,7 +27216,7 @@ declare namespace Excel {
         text: string;
         /**
          *
-         * Represents the text orientation of chart data label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+         * Represents the angle to which the text is oriented for the chart data label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
          *
          * [Api set: ExcelApi 1.8]
          */
@@ -28069,7 +28090,7 @@ declare namespace Excel {
         text: string;
         /**
          *
-         * Represents the text orientation of chart title. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+         * Represents the angle to which the text is oriented for the chart title. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
          *
          * [Api set: ExcelApi 1.7]
          */
@@ -29094,7 +29115,7 @@ declare namespace Excel {
         text: string;
         /**
          *
-         * Represents the text orientation of chart trendline label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+         * Represents the angle to which the text is oriented for the chart trendline label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
          *
          * [Api set: ExcelApi 1.8]
          */
@@ -35884,7 +35905,7 @@ declare namespace Excel {
         email: string;
         /**
          *
-         * Gets or sets the id of the entity. This matches one of the ids in `CommentRichContent.richContent`.
+         * Gets or sets the id of the entity. The id matches one of the ids in `CommentRichContent.richContent`.
          *
          * [Api set: ExcelApiOnline 1.1]
          */
@@ -37559,7 +37580,7 @@ declare namespace Excel {
         leftMargin: number;
         /**
          *
-         * Represents the text orientation of the text frame. See Excel.ShapeTextOrientation for details.
+         * Represents the angle to which the text is oriented for the text frame. See Excel.ShapeTextOrientation for details.
          *
          * [Api set: ExcelApi 1.9]
          */
@@ -45058,7 +45079,6 @@ declare namespace Excel {
             /**
              *
              * Represents the formula in A1-style notation.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -45066,7 +45086,6 @@ declare namespace Excel {
             /**
              *
              * Represents the formula in A1-style notation, in the user's language and number-formatting locale.  For example, the English "=SUM(A1, 1.5)" formula would become "=SUMME(A1; 1,5)" in German.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -45074,7 +45093,6 @@ declare namespace Excel {
             /**
              *
              * Represents the formula in R1C1-style notation.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.2]
              */
@@ -45089,7 +45107,6 @@ declare namespace Excel {
             /**
              *
              * Represents Excel's number format code for the given range.
-            When setting number format to a range, the value argument can be either a single value (string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -45097,8 +45114,6 @@ declare namespace Excel {
             /**
              *
              * Represents Excel's number format code for the given range, based on the language settings of the user.​
-            When setting number format local to a range, the value argument can be either a single value (string) or a two-dimensional array.
-            If the argument is a single value, it will be applied to all cells in the range.​
             Excel does not perform any language or format coercion when getting or setting the `numberFormatLocal` property.
             Any returned text uses the locally-formatted strings based on the language specified in the system settings.
              *
@@ -45124,7 +45139,6 @@ declare namespace Excel {
             /**
              *
              * Represents the raw values of the specified range. The data returned could be of type string, number, or a boolean. Cells that contain an error will return the error string.
-            When setting values to a range, the value argument can be either a single value (string, number or boolean) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -46513,7 +46527,7 @@ declare namespace Excel {
             showDisplayUnitLabel?: boolean;
             /**
              *
-             * Represents the text orientation of the axis tick label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart axis tick label. The value should either be an integer from -90 to 90 or the integer 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -46701,7 +46715,7 @@ declare namespace Excel {
             showValue?: boolean;
             /**
              *
-             * Represents the text orientation of data labels. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the data labels. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -46832,7 +46846,7 @@ declare namespace Excel {
             text?: string;
             /**
              *
-             * Represents the text orientation of chart data label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart data label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -47119,7 +47133,7 @@ declare namespace Excel {
             text?: string;
             /**
              *
-             * Represents the text orientation of chart title. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart title. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.7]
              */
@@ -47511,7 +47525,7 @@ declare namespace Excel {
             text?: string;
             /**
              *
-             * Represents the text orientation of chart trendline label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart trendline label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -49280,7 +49294,7 @@ declare namespace Excel {
             leftMargin?: number;
             /**
              *
-             * Represents the text orientation of the text frame. See Excel.ShapeTextOrientation for details.
+             * Represents the angle to which the text is oriented for the text frame. See Excel.ShapeTextOrientation for details.
              *
              * [Api set: ExcelApi 1.9]
              */
@@ -50036,7 +50050,6 @@ declare namespace Excel {
             /**
              *
              * Represents the formula in A1-style notation.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -50044,7 +50057,6 @@ declare namespace Excel {
             /**
              *
              * Represents the formula in A1-style notation, in the user's language and number-formatting locale.  For example, the English "=SUM(A1, 1.5)" formula would become "=SUMME(A1; 1,5)" in German.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -50052,7 +50064,6 @@ declare namespace Excel {
             /**
              *
              * Represents the formula in R1C1-style notation.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.2]
              */
@@ -50119,7 +50130,6 @@ declare namespace Excel {
             /**
              *
              * Represents Excel's number format code for the given range.
-            When setting number format to a range, the value argument can be either a single value (string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -50127,8 +50137,6 @@ declare namespace Excel {
             /**
              *
              * Represents Excel's number format code for the given range, based on the language settings of the user.​
-            When setting number format local to a range, the value argument can be either a single value (string) or a two-dimensional array.
-            If the argument is a single value, it will be applied to all cells in the range.​
             Excel does not perform any language or format coercion when getting or setting the `numberFormatLocal` property.
             Any returned text uses the locally-formatted strings based on the language specified in the system settings.
              *
@@ -50199,7 +50207,6 @@ declare namespace Excel {
             /**
              *
              * Represents the raw values of the specified range. The data returned could be of type string, number, or a boolean. Cells that contain an error will return the error string.
-            When setting values to a range, the value argument can be either a single value (string, number or boolean) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -51948,7 +51955,7 @@ declare namespace Excel {
             showDisplayUnitLabel?: boolean;
             /**
              *
-             * Represents the text orientation of the axis tick label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart axis tick label. The value should either be an integer from -90 to 90 or the integer 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -52157,7 +52164,7 @@ declare namespace Excel {
             showValue?: boolean;
             /**
              *
-             * Represents the text orientation of data labels. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the data labels. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -52295,7 +52302,7 @@ declare namespace Excel {
             text?: string;
             /**
              *
-             * Represents the text orientation of chart data label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart data label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -52638,7 +52645,7 @@ declare namespace Excel {
             text?: string;
             /**
              *
-             * Represents the text orientation of chart title. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart title. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.7]
              */
@@ -53044,7 +53051,7 @@ declare namespace Excel {
             text?: string;
             /**
              *
-             * Represents the text orientation of chart trendline label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart trendline label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -55385,7 +55392,7 @@ declare namespace Excel {
             leftMargin?: number;
             /**
              *
-             * Represents the text orientation of the text frame. See Excel.ShapeTextOrientation for details.
+             * Represents the angle to which the text is oriented for the text frame. See Excel.ShapeTextOrientation for details.
              *
              * [Api set: ExcelApi 1.9]
              */
@@ -56258,7 +56265,6 @@ declare namespace Excel {
             /**
              *
              * Represents the formula in A1-style notation.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -56266,7 +56272,6 @@ declare namespace Excel {
             /**
              *
              * Represents the formula in A1-style notation, in the user's language and number-formatting locale.  For example, the English "=SUM(A1, 1.5)" formula would become "=SUMME(A1; 1,5)" in German.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -56274,7 +56279,6 @@ declare namespace Excel {
             /**
              *
              * Represents the formula in R1C1-style notation.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.2]
              */
@@ -56341,7 +56345,6 @@ declare namespace Excel {
             /**
              *
              * Represents Excel's number format code for the given range.
-            When setting number format to a range, the value argument can be either a single value (string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -56349,8 +56352,6 @@ declare namespace Excel {
             /**
              *
              * Represents Excel's number format code for the given range, based on the language settings of the user.​
-            When setting number format local to a range, the value argument can be either a single value (string) or a two-dimensional array.
-            If the argument is a single value, it will be applied to all cells in the range.​
             Excel does not perform any language or format coercion when getting or setting the `numberFormatLocal` property.
             Any returned text uses the locally-formatted strings based on the language specified in the system settings.
              *
@@ -56421,7 +56422,6 @@ declare namespace Excel {
             /**
              *
              * Represents the raw values of the specified range. The data returned could be of type string, number, or a boolean. Cells that contain an error will return the error string.
-            When setting values to a range, the value argument can be either a single value (string, number or boolean) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -59555,7 +59555,7 @@ declare namespace Excel {
             showDisplayUnitLabel?: boolean;
             /**
              *
-             * Represents the text orientation of the axis tick label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart axis tick label. The value should either be an integer from -90 to 90 or the integer 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -59800,7 +59800,7 @@ declare namespace Excel {
             showValue?: boolean;
             /**
              *
-             * Represents the text orientation of data labels. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the data labels. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -59947,7 +59947,7 @@ declare namespace Excel {
             text?: boolean;
             /**
              *
-             * Represents the text orientation of chart data label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart data label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -60423,7 +60423,7 @@ declare namespace Excel {
             text?: boolean;
             /**
              *
-             * Represents the text orientation of chart title. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart title. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.7]
              */
@@ -61004,7 +61004,7 @@ declare namespace Excel {
             text?: boolean;
             /**
              *
-             * Represents the text orientation of chart trendline label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
+             * Represents the angle to which the text is oriented for the chart trendline label. The value should be an integer either from -90 to 90, or 180 for vertically-oriented text.
              *
              * [Api set: ExcelApi 1.8]
              */
@@ -64062,7 +64062,6 @@ declare namespace Excel {
             /**
              *
              * For EACH ITEM in the collection: Represents the formula in A1-style notation.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -64070,7 +64069,6 @@ declare namespace Excel {
             /**
              *
              * For EACH ITEM in the collection: Represents the formula in A1-style notation, in the user's language and number-formatting locale.  For example, the English "=SUM(A1, 1.5)" formula would become "=SUMME(A1; 1,5)" in German.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -64078,7 +64076,6 @@ declare namespace Excel {
             /**
              *
              * For EACH ITEM in the collection: Represents the formula in R1C1-style notation.
-            When setting formulas to a range, the value argument can be either a single value (a string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.2]
              */
@@ -64145,7 +64142,6 @@ declare namespace Excel {
             /**
              *
              * For EACH ITEM in the collection: Represents Excel's number format code for the given range.
-            When setting number format to a range, the value argument can be either a single value (string) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -64153,8 +64149,6 @@ declare namespace Excel {
             /**
              *
              * For EACH ITEM in the collection: Represents Excel's number format code for the given range, based on the language settings of the user.​
-            When setting number format local to a range, the value argument can be either a single value (string) or a two-dimensional array.
-            If the argument is a single value, it will be applied to all cells in the range.​
             Excel does not perform any language or format coercion when getting or setting the `numberFormatLocal` property.
             Any returned text uses the locally-formatted strings based on the language specified in the system settings.
              *
@@ -64225,7 +64219,6 @@ declare namespace Excel {
             /**
              *
              * For EACH ITEM in the collection: Represents the raw values of the specified range. The data returned could be of type string, number, or a boolean. Cells that contain an error will return the error string.
-            When setting values to a range, the value argument can be either a single value (string, number or boolean) or a two-dimensional array. If the argument is a single value, it will be applied to all cells in the range.
              *
              * [Api set: ExcelApi 1.1]
              */
@@ -65439,7 +65432,7 @@ declare namespace Excel {
             leftMargin?: boolean;
             /**
              *
-             * Represents the text orientation of the text frame. See Excel.ShapeTextOrientation for details.
+             * Represents the angle to which the text is oriented for the text frame. See Excel.ShapeTextOrientation for details.
              *
              * [Api set: ExcelApi 1.9]
              */
