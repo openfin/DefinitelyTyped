@@ -6,7 +6,7 @@
 //                 Li Cui <https://github.com/licui3936>
 //                 Tomer Sharon <https://github.com/tomer-openfin>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-// TypeScript Version: 2.9
+// TypeScript Version: 3.0
 
 // based on v15.80.49.4
 // see https://openfin.co/support/technical-faq/#what-do-the-numbers-in-the-runtime-version-mean
@@ -2032,3 +2032,48 @@ declare namespace fin {
         'user-movement-disabled' |
         'user-movement-enabled';
 }
+
+/**
+ * When running within the OpenFin Runtime, and the `fdc3Api` flag in your manifest is set, your web applications will
+ * have access to the "fdc3" namespace without the need to include additional source files. You can treat the "fdc3"
+ * namespace as you would the "window", "navigator" or "document" objects.
+ */
+declare namespace fdc3 {
+    type AppChannel = import('./_v2/fdc3/main').AppChannel;
+    type AppDirIntent = import('./_v2/fdc3/main').AppDirIntent;
+    type AppId = import('./_v2/fdc3/main').AppId;
+    type AppImage = import('./_v2/fdc3/main').AppImage;
+    type AppIntent = import('./_v2/fdc3/main').AppIntent;
+    type AppName = import('./_v2/fdc3/main').AppName;
+    type Application = import('./_v2/fdc3/main').Application;
+    type ApplicationError = import('./_v2/fdc3/main').ApplicationError;
+    type Channel = import('./_v2/fdc3/main').Channel;
+    type ChannelBase = import('./_v2/fdc3/main').ChannelBase;
+    type ChannelChangedEvent = import('./_v2/fdc3/main').ChannelChangedEvent;
+    type ChannelContextListener = import('./_v2/fdc3/main').ChannelContextListener;
+    type ChannelError = import('./_v2/fdc3/main').ChannelError;
+    type ChannelId = import('./_v2/fdc3/main').ChannelId;
+    type ChannelWindowAddedEvent = import('./_v2/fdc3/main').ChannelWindowAddedEvent;
+    type ChannelWindowRemovedEvent = import('./_v2/fdc3/main').ChannelWindowRemovedEvent;
+    type ConnectionError = import('./_v2/fdc3/main').ConnectionError;
+    type ContactContext = import('./_v2/fdc3/main').ContactContext;
+    type Context = import('./_v2/fdc3/main').Context;
+    type ContextListener = import('./_v2/fdc3/main').ContextListener;
+    type DefaultChannel = import('./_v2/fdc3/main').DefaultChannel;
+    type DisplayMetadata = import('./_v2/fdc3/main').DisplayMetadata;
+    type FDC3Error = import('./_v2/fdc3/main').FDC3Error;
+    type Icon = import('./_v2/fdc3/main').Icon;
+    type InstrumentContext = import('./_v2/fdc3/main').InstrumentContext;
+    type IntentListener = import('./_v2/fdc3/main').IntentListener;
+    type IntentMetadata = import('./_v2/fdc3/main').IntentMetadata;
+    type IntentResolution = import('./_v2/fdc3/main').IntentResolution;
+    type Intents = import('./_v2/fdc3/main').Intents;
+    type Listener = import('./_v2/fdc3/main').Listener;
+    type NameValuePair = import('./_v2/fdc3/main').NameValuePair;
+    type OrganizationContext = import('./_v2/fdc3/main').OrganizationContext;
+    type ResolveError = import('./_v2/fdc3/main').ResolveError;
+    type SendContextError = import('./_v2/fdc3/main').SendContextError;
+    type SystemChannel = import('./_v2/fdc3/main').SystemChannel;
+}
+
+declare const fdc3: typeof import('./_v2/fdc3/main');
